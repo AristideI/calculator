@@ -2,30 +2,97 @@ import { useState } from "react";
 import "./App.css";
 
 function App() {
+  let [once, setOnce] = useState(0);
   let [answer, setAnswer] = useState("Answer");
   let [sign, setSign] = useState("");
-  let [prev, setPrev] = useState("");
-  let [current, setCurrent] = useState("");
+  let [prev, setPrev] = useState("0");
+  let [current, setCurrent] = useState("0");
+
   function handleNumber(e) {
-    setCurrent((current += e.target.value));
+    if (current.length < 11) {
+      if (current === "0") setCurrent(e.target.value);
+      else {
+        setCurrent((current += e.target.value));
+      }
+    }
+  }
+  function handleZero(e) {
+    if (current !== "0") setCurrent((current += e.target.value));
+  }
+  function handleDot(e) {
+    if (current === "0" || current === "") {
+      setCurrent("0.");
+    }
+    if (!current.includes(".")) setCurrent((current += e.target.value));
   }
   function handleSign(e) {
-    console.log(e.target.value);
-    setPrev((prev += current));
-    setCurrent("");
+    if (prev === "0" || Number(prev) === 0) setPrev(current);
+    let pro = current;
+    setCurrent("0");
     setSign(e.target.value);
+    if (once > 0) {
+      if ((pro !== "0" || pro !== 0) && pro !== prev) {
+        let answer = eval(`${prev}${sign}${pro}`);
+        if (
+          answer === -Infinity ||
+          typeof answer === "undefined" ||
+          typeof answer === "object" ||
+          isNaN(answer) ||
+          answer === Infinity
+        ) {
+          console.log(answer);
+          setAnswer("Error");
+          setPrev("0");
+        } else {
+          setAnswer(answer);
+          setPrev(answer);
+        }
+      }
+    }
+    setOnce(once + 1);
+  }
+  function handleMod(e) {
+    if (prev === "0" || Number(prev) === 0) setPrev(current);
+    let pro = current;
+    setCurrent("0");
+    setSign(e.target.value);
+    if (once > 0) {
+      if ((pro !== "0" || pro !== 0) && pro !== prev) {
+        let answer = (prev * pro) / 100;
+        if (
+          answer === -Infinity ||
+          answer === undefined ||
+          answer === null ||
+          answer === NaN ||
+          answer === Infinity
+        ) {
+          setAnswer("Error");
+          setPrev("0");
+        } else {
+          setAnswer(answer);
+          setPrev(answer);
+        }
+      }
+    }
+    setOnce(once + 1);
   }
 
   function handleEqual() {
-    setAnswer(eval(`${prev}${sign}${current}`));
-    setPrev(eval(`${prev}${sign}${current}`));
-    setCurrent("");
+    let answer = eval(`${prev}${sign}${current}`);
+    if (!answer || answer === Infinity) {
+      setAnswer("Error");
+      setPrev("0");
+    } else {
+      setAnswer(answer);
+      setPrev(answer);
+    }
+    setCurrent("0");
   }
 
   function handleClear() {
     setAnswer("Answer");
-    setCurrent("");
-    setPrev("");
+    setCurrent("0");
+    setPrev("0");
     setSign("");
   }
 
@@ -51,7 +118,7 @@ function App() {
           </button>
           <button
             name="mod"
-            onClick={handleSign}
+            onClick={handleMod}
             value="%"
             className="border-2 border-purple-700 w-1/4 h-20 grid place-content-center font-bold text-3xl"
           >
@@ -164,7 +231,7 @@ function App() {
           <button
             name="0"
             value={0}
-            onClick={handleNumber}
+            onClick={handleZero}
             className="border-2 border-purple-700 w-1/4 h-20 grid place-content-center font-bold text-3xl"
           >
             0
@@ -172,7 +239,7 @@ function App() {
           <button
             name="dot"
             value="."
-            onClick={handleNumber}
+            onClick={handleDot}
             className="border-2 border-purple-700 w-1/4 h-20 grid place-content-center font-bold text-3xl"
           >
             .
