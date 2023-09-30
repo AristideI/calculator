@@ -37,7 +37,7 @@ function App() {
   }
 
   function handleDelete() {
-    console.log("delete");
+    setCurrent(current.slice(0, current.length - 1));
   }
 
   function handleNum(e) {
@@ -47,6 +47,22 @@ function App() {
       } else {
         setCurrent(current + e.target.name);
       }
+    }
+  }
+
+  function handleEqual() {
+    if (
+      current[current.length - 1] === "/" ||
+      current[current.length - 1] === "+" ||
+      current[current.length - 1] === "-" ||
+      current[current.length - 1] === "*"
+    ) {
+      setCurrent(current.slice(0, current.length - 1));
+      setPrev(current);
+      setCurrent(String(eval(current)));
+    } else {
+      setPrev(current);
+      setCurrent(String(eval(current)));
     }
   }
 
@@ -259,6 +275,7 @@ function App() {
 
               <button
                 name="equal"
+                onClick={handleEqual}
                 className="bg-[#005DB2] w-full grid place-content-center rounded-xl font-bold text-3xl text-white  col-start-4 col-end-5 row-start-4 row-end-6 shadow-inner shadow-white"
               >
                 =
